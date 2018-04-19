@@ -51,7 +51,8 @@ class FlaskRestBotClient(RestBotClient):
 
     def create_response(self, response_data, status):
         if self.configuration.client_configuration.debug is True:
-            self.dump_request(response_data)
+            self.dump_request(request)
+            YLogger.debug(self, "Response Data:{}".format({"response":response_data, "status":status}))
 
         return make_response(jsonify({'response': response_data}, status))
 

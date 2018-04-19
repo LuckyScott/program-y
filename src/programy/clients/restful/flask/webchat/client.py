@@ -125,6 +125,53 @@ class WebChatBotClient(FlaskRestBotClient):
 
         return self.create_response(response_data, userid, userid_expire_date)
 
+    def get_rest_question(self, rest_request):
+        if 'question' not in rest_request.args or rest_request.args['question'] is None:
+            YLogger.error(self, "'question' missing from request")
+            abort(400)
+        return rest_request.args['question']
+
+    def get_rest_userid(self, rest_request):
+        if 'userid' not in rest_request.args or rest_request.args['userid'] is None:
+            YLogger.error(self, "'userid' missing from request")
+            abort(400)
+        return rest_request.args['userid']
+
+    def dump_request(self, request):
+        if request.method == 'POST':
+            YLogger.debug(self, str(request))
+        elif request.method == 'GET':
+            YLogger.debug(self, str(request))
+        else:
+            YLogger.debug(self, "restsclient.dump_request(), only GET and POST supported!")
+
+    def process_rest_request(self, request):
+        question = "Unknown"
+        userid = "Unknown"
+        try:
+            response, status = self.verify_api_key_usage(request)
+            if response is not None:
+                return response, status
+
+            question = self.get_rest_question(request)
+            userid = self.get_rest_userid(request)
+
+            answer = self.ask_question(userid, question)
+
+            return self.format_success_response(userid, question, answer), 200
+
+        except Exception as excep:
+
+            return self.format_error_response(userid, question, str(excep)), 500
+
+    def response_rest_message(self, request):
+        response_data, status = self.process_rest_request(request)
+        if self.configuration.client_configuration.debug is True:
+            self.dump_request(request)
+            YLogger.debug(self, "restclient response data:{}".format({'response': response_data, 'status':status}))
+
+        return make_response(jsonify({'response': response_data, 'status':status}))
+
 
 if __name__ == '__main__':
 
@@ -145,6 +192,10 @@ if __name__ == '__main__':
             print(e)
             YLogger.exception(None, e)
             return "500"
+
+    @APP.route('/api/rest/v1.0/ask', methods=['GET'])
+    def api_rest_ask():
+        return WEB_CLIENT.response_rest_message(request)
 
     WEB_CLIENT = WebChatBotClient()
     WEB_CLIENT.run(APP)
