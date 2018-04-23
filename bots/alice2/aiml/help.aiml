@@ -19,4 +19,110 @@
 <category><pattern>HELP VOICE</pattern>
 <template>You can buy a male voice from Svox. Installing this app will give CallMom (as well as all other apps) a male voice. See <a href="https://play.google.com/store/apps/details?id=com.svox.classic.langpack.eng_usa_male&amp;feature=search_result#?t=W251bGwsMSwyLDEsImNvbS5zdm94LmNsYXNzaWMubGFuZ3BhY2suZW5nX3VzYV9tYWxlIl0.">Svox Classic Text-to-Speech Engine</a>.</template>
 </category>
+
+<category>
+<pattern>你 好</pattern>
+<template>你 好 , 很 高 兴 认 识 您 !</template>
+</category>
+
+<category>
+<pattern>现 在 几 点 了</pattern>
+<template>
+<srai>TIME</srai>
+</template>
+</category>
+
+<category>
+<pattern>几 点 了</pattern>
+<template>
+<srai>TIME</srai>
+</template>
+</category>
+
+<category>
+<pattern>TIME</pattern>
+<template>
+<system>date</system>
+</template>
+</category>
+
+<category>
+  <pattern>*</pattern>
+  <template>
+    <condition>
+      <li name="where" value="">你现在在什么地方?</li>
+      <li>我暂时不会说别的了.</li>
+    </condition>
+  </template>
+</category>
+
+<category>
+<pattern>*</pattern>
+<that>你现在在什么地方</that>
+<template>
+<think><set name="where"><formal><star/></formal></set></think>
+<random>
+  <li><get name="where"/>是个好地方.</li>
+  <li>真希望我也在<get name="where"/>, 陪你.</li>
+  <li>我刚刚看了下<get name="where"/>的天气哦.</li>
+</random>
+</template>
+</category>
+
+
+
+<category>
+  <pattern>外 面 热 么</pattern>
+  <template>
+      你现在在<get name="where"/>,
+      <system>python getweather.py realtime <get name="where"/></system>
+  </template>
+</category>
+
+<category>
+  <pattern>我 到 * 了</pattern>
+  <template>
+    <condition>
+      <li name="where" value=""><think><set name="where"><formal><star/></formal></set></think>
+      嗯我知道了.</li>
+      <li>骗淫, 你明明在<get name="where"/>.</li>
+    </condition>
+  </template>
+</category>
+
+<category>
+<pattern>* 天 气</pattern>
+<template>
+<system>python getweather.py realtime <star /></system>
+</template>
+</category>
+
+<category>
+<pattern>告诉我 * 天气</pattern>
+<template>
+<system>python getweather.py realtime <star /></system>
+</template>
+</category>
+
+<category>
+<pattern>* 天气实况</pattern>
+<template>
+<system>python getweather.py realtime <star /></system>
+</template>
+</category>
+
+<category>
+<pattern>* 当 前 天 气</pattern>
+<template>
+<system>python getweather.py realtime <star /></system>
+</template>
+</category>
+
+<category>
+<pattern>* 现 在 天 气</pattern>
+<template>
+<system>python getweather.py realtime <star /></system>
+</template>
+</category>
+
 </aiml>
