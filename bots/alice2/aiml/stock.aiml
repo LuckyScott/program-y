@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+
+	<!-- 证券名称  -->
+	<category>
+		<pattern><set>secShortName</set></pattern>
+		<template>
+		   <star />的股票代码是<map name="secShortName2secTicker"><star /></map>
+		</template>
+	</category>
+
+	<!--证券名称拼音-->
+	<category>
+		<pattern><set>secCnSpell</set></pattern>
+		<template>
+		   <star />的股票代码是<map name="secCnSpell2secTicker"><star /></map>
+		</template>
+	</category>
+
+	<!--资讯股票-->
+	<category>
+		<pattern><set>secShortName</set> 怎 么 样 * </pattern>
+		<template>还可以</template>
+	</category>
+	<category>
+		<pattern>可 以 买 吗</pattern>
+		<that>还可以</that>
+		<template>
+		   可以
+		</template>
+	</category>
+
+
+	<category>
+		<pattern><set>secCnSpell</set> 是 股 票 吗</pattern>
+		<template>
+		   <star/>是股票
+		</template>
+	</category>
+
+	<category>
+		<pattern> * 是 股 票 吗</pattern>
+		<template>
+		   <star/>不是股票
+		</template>
+	</category>
+
+
+
+	<category>
+		<pattern>你 叫 什 么 名 字</pattern>
+		<template>
+		   你好,我是小芭
+		</template>
+	</category>
+
+</aiml>
