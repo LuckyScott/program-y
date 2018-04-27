@@ -60,7 +60,8 @@ brain:
         REST:
             classname: programy.services.rest.GenericRESTService
             method: GET
-            host: 0.0.0.0
+            host: 192.168.1.82
+            port: 3000
         Pannous:
             classname: programy.services.pannous.PannousService
             url: http://weannie.pannous.com/api
@@ -95,7 +96,7 @@ rest:
 webchat:
   host: 127.0.0.1
   port: 5000
-  debug: false
+  debug: true
 
 twitter:
   polling: true

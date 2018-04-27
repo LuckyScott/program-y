@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+
+<!-- 获取估值 -->
+<!-- name: STOCK_VALUATION -->
+<!-- args1: stock_code -->
+
+<category><pattern><set>secTicker</set> 的 估 值 情 况</pattern>
+<template><sraix service="REST">STOCK_VALUATION <star/></sraix></template>
+</category>
+
+<category><pattern>股 票 * 的 估 值 情 况</pattern>
+<template><sraix service="REST">STOCK_VALUATION <star/></sraix></template>
+</category>
+
+<!-- 获取短消息 -->
+<!-- name: STOCK_NEWS -->
+<!-- args1: stock_code -->
+<category><pattern>股 票 * 的 最 新 消 息</pattern>
+<template><sraix service="REST">STOCK_NEWS <star/></sraix></template>
+</category>
+
+<category><pattern>股 票 * 的 最 新 资 讯</pattern>
+<template><sraix service="REST">STOCK_NEWS2 <star/></sraix></template>
+</category>
+
+<!-- 早盘竞价模型 -->
+<!-- name: STOCK_MORNING_SELECT -->
+<!-- args1: date -->
+<category><pattern>今 天 早 盘 选 的 什 么 股 票</pattern>
+<template><sraix service="REST">STOCK_MORNING_SELECT TODAY</sraix></template>
+</category>
+
+<category><pattern>昨 天 早 盘 选 的 什 么 股 票</pattern>
+<template><sraix service="REST">STOCK_MORNING_SELECT YESTERDAY</sraix></template>
+</category>
+
+<!-- 通配符在最前面无法匹配 ????? -->
+<category><pattern>* 早 盘 选 的 什 么 股 票</pattern>
+<template><sraix service="REST">STOCK_MORNING_SELECT <start/></sraix></template>
+</category>
+
+<category><pattern>请 问 * 早 盘 选 的 什 么 股 票</pattern>
+<template><sraix service="REST">STOCK_MORNING_SELECT <start/></sraix></template>
+</category>
+
+<category><pattern>^ ABCDEFG_TTY</pattern>
+<template>1 HAHAHAHAHAHAAH</template>
+</category>
+
+<category><pattern>* QQ_ABCDEFG_TTY</pattern>
+<template>2 HAHAHAHAHAHAAH</template>
+</category>
+
+
+<!-- 关注度 -->
+<!-- name: STOCK_FOCUS -->
+<!-- args1: stock_code -->
+<category><pattern>股 票 * 的 关 注 度</pattern>
+<template><sraix service="REST">STOCK_FOCUS <star/></sraix></template>
+</category>
+
+<!-- 股票基本信息 -->
+<!---->
+<!-- name: STOCK_NEWS -->
+<!-- args1: stock_code -->
+<!-- args2: content -->
+<!--     content: START_DATE   上市时间 -->
+<!--     content: INDUSTRY   所属行业 -->
+<!--     content: CONCEPT   相关概念 -->
+<!--     content: CAPITAL   股本 -->
+<!--     content: NETPROFIT   最新报告期净利润 -->
+
+
+<category><pattern>股 票 * 的 上 市 时 间</pattern>
+<template><sraix service="REST">STOCK_INFO <star/> START_DATE</sraix></template>
+</category>
+
+<category><pattern>股 票 * 的 行 业</pattern>
+<template><sraix service="REST">STOCK_INFO <star/> INDUSTRY</sraix></template>
+</category>
+
+<category><pattern>股 票 * 的 相 关 概 念</pattern>
+<template><sraix service="REST">STOCK_INFO <star/> CONCEPT</sraix></template>
+</category>
+
+<category><pattern>股 票 * 的 盈 利 情 况</pattern>
+<template><sraix service="REST">STOCK_INFO <star/> NETPROFIT</sraix></template>
+</category>
+
+</aiml>

@@ -19,6 +19,8 @@ import requests
 
 from programy.services.service import Service
 from programy.config.brain.service import BrainServiceConfiguration
+import datetime
+from dateutil.parser import parse as date_parse
 
 
 class RestAPI(object):
@@ -72,6 +74,40 @@ class GenericRESTService(Service):
         return {}
 
     def _format_get_url(self, url, client_context, question):
+        splits = question.split()
+        api = splits[0].upper()
+        if api == 'STOCK_VALUATION':
+            code = ''.join(splits[1:])
+            dt = datetime.datetime.now()
+            if dt.hour <= 8:
+                dt = datetime.date.today() - datetime.timedelta(days=1)
+            url = '{}/api/stock/valuation/{:%Y-%m-%d}/{}'.format(url, dt, code)
+        elif api == 'STOCK_NEWS':
+            code = ''.join(splits[1:])
+            url = '{}/api/news/ycj/{}'.format(url, code)
+        elif api == 'STOCK_NEWS2':
+            code = ''.join(splits[1:])
+            url = '{}/api/news/cailian/{}'.format(url, code)
+        elif api == 'STOCK_MORNING_SELECT':
+            if len(splits) < 2:
+                date = datetime.date.today()
+            if splits[1].upper() == "TODAY":
+                date = datetime.date.today()
+            elif splits[1].upper() == "YESTERDAY":
+                date = datetime.date.today() - datetime.timedelta(days=1)
+            else:
+                date = date_parse(splits[1:])
+            url = '{}/api/stock/morning_select/{:%Y-%m-%d}'.format(url, date)
+        elif api == 'STOCK_FOCUS':
+            code = ''.join(splits[1:])
+            url = '{}/api/stock/ths_focus/{}'.format(url, code)
+        elif api == 'STOCK_INFO':
+            code = ''.join(splits[1:-1])
+            content = splits[-1]
+            if content == 'NETPROFIT':
+                url = '{}/api/stock/basic_info/fundamental/{}/{:%Y-%m-%d}'.format(url, code, datetime.datetime.now())
+            else:
+                url = '{}/api/stock/basic_info/{}'.format(url, code)
         return url
 
     def _parse_response(self, text):
@@ -85,6 +121,24 @@ class GenericRESTService(Service):
             if self.method == 'GET':
                 full_url = self._format_get_url(url, client_context, question)
                 response = self.api.get(full_url)
+                splits = question.split()
+                if splits[0].upper() == 'STOCK_INFO':
+                    response = response.json()
+                    if response['status'] != 0:
+                        response = response['message']
+                    elif splits[-1] == 'START_DATE':
+                        response = date_parse(response['data']['marketed_date']).strftime('%Y-%m-%d')
+                    elif splits[-2] == 'INDUSTRY':
+                        response = response['data']['concepts']
+                    elif splits[-1] == 'CONCEPT':
+                        response = response['data']['wind_concepts']
+                    elif splits[-1] == 'CAPITAL':
+                        response = response['data']['totle_share_count']
+                    elif splits[-1] == 'NETPROFIT':
+                        response = "{} 报表公布的净利润为：{}".format(response['data']['stat_date'],response['data']['net_profit'])
+                    else:
+                        response = "Unknown"
+                    return self._parse_response(str(response))
             elif self.method == 'POST':
                 payload = self._format_payload(client_context, question)
                 response = self.api.post(url, data=payload)
