@@ -13,6 +13,7 @@ from flask import current_app
 from programy.clients.restful.flask.client import FlaskRestBotClient
 from programy.clients.restful.flask.webchat.config import WebChatConfiguration
 from programy.clients.render.html import HtmlRenderer
+import json
 
 
 class WebChatBotClient(FlaskRestBotClient):
@@ -116,6 +117,16 @@ class WebChatBotClient(FlaskRestBotClient):
         client_context = self.create_client_context(userid)
         try:
             answer = self.get_answer(client_context, question)
+            if answer.startswith('#`json`#'):
+                try:
+                    answer = json.loads(answer[8:])
+                    if answer['status'] == 0:
+                        answer = json.dumps(answer['data'], ensure_ascii=False)
+                    else:
+                        answer = answer['message']
+                except:
+                    answer = answer[8:]
+                    YLogger.debug(self, "restsclient load json from answer ERROR, answer: %s" % answer)
             rendered = self._renderer.render(client_context, answer)
             response_data = self.create_success_response_data(question, rendered)
 
@@ -133,9 +144,12 @@ class WebChatBotClient(FlaskRestBotClient):
 
     def get_rest_userid(self, rest_request):
         if 'userid' not in rest_request.args or rest_request.args['userid'] is None:
+            userid = str(uuid.uuid4().hex)
             YLogger.error(self, "'userid' missing from request")
-            abort(400)
-        return rest_request.args['userid']
+            # abort(400)
+        else:
+            userid = rest_request.args['userid']
+        return userid
 
     def dump_request(self, request):
         if request.method == 'POST':
@@ -157,8 +171,24 @@ class WebChatBotClient(FlaskRestBotClient):
             userid = self.get_rest_userid(request)
 
             answer = self.ask_question(userid, question)
+            response = None
+            # if type(answer) is bytes and answer.startswith(b'\xe8json\xe8'):
+            # 内部不支持 bytes 类型
+            if answer.startswith('#`json`#'):
+                try:
+                    answer = json.loads(answer[8:])
+                    response = self.format_success_response(userid, question, answer)
+                    response['data_type'] = 'json'
+                except:
+                    answer = answer[8:]
+                    YLogger.debug(self, "restsclient load json from answer ERROR, answer: %s" % answer)
 
-            return self.format_success_response(userid, question, answer), 200
+            if response is None:
+                response = self.format_success_response(userid, question, answer)
+                response['data_type'] = 'text'
+
+            return response, 200
+            # return self.format_success_response(userid, question, answer), 200
 
         except Exception as excep:
 

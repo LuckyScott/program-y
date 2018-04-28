@@ -111,6 +111,9 @@ class GenericRESTService(Service):
         return url
 
     def _parse_response(self, text):
+        # text = b'\xe8json\xe8' + text.encode('utf-8')
+        # 不支持 bytes 类型
+        text = '#`json`#' + text
         return text
 
     def ask_question(self, client_context, question: str):
